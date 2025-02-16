@@ -1,0 +1,11 @@
+# Ignore Docker data
+drupal-data/
+db-data/
+certs/
+
+# Ignore sensitive files
+.env
+
+# Ignore IDE and system files
+.vscode/
+.DS_Store

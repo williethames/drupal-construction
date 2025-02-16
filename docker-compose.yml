@@ -1,0 +1,50 @@
+version: "3.7"
+
+services:
+  drupal:
+    image: drupal:latest
+    container_name: drupal
+    ports:
+      - "8080:80"  # Drupal running on HTTP
+    volumes:
+      - drupal-construction_data:/var/www/html
+    networks:
+      - drupal_network
+    environment:
+      - DRUPAL_DB_HOST=db
+      - DRUPAL_DB_NAME=drupal
+      - DRUPAL_DB_USER=drupal
+      - DRUPAL_DB_PASSWORD=drupal
+
+  db:
+    image: postgres:16
+    container_name: db
+    environment:
+      POSTGRES_USER: drupal
+      POSTGRES_PASSWORD: drupal
+      POSTGRES_DB: drupal
+    volumes:
+      - drupal-construction_db-data:/var/lib/postgresql/data
+    networks:
+      - drupal_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - "8080:443"  # Exposing HTTPS (SSL) on port 8080 for testing
+    volumes:
+      - ./certs:/etc/nginx/certs
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - drupal
+    networks:
+      - drupal_network
+
+networks:
+  drupal_network:
+
+volumes:
+  drupal-construction_data:
+  drupal-construction_db-data:
